@@ -54,7 +54,6 @@ class Triangle:
         cr.line_to(self.x2, self.y2)
         cr.line_to(self.x3, self.y3)
         cr.close_path()
-        cr.fill()
 
 
 class Sier(gtk.DrawingArea):
@@ -105,6 +104,7 @@ class Sier(gtk.DrawingArea):
         start = time()
         for t in tris:
             t.draw(cr)
+        cr.fill()
         end = time()
         print "Drew", len(tris), "triangles in", round((end-start), 4), "s"
 
