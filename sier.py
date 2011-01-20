@@ -58,10 +58,12 @@ class Triangle:
 
 class Sier(gtk.DrawingArea):
     level = 0
+    tris = []
 
     def __init__(self):
         gtk.DrawingArea.__init__(self)
         self.connect("expose_event", self.expose)
+        self.connect("size-allocate", self.allocate)
 
     """ We assume x2,y2-x3,y3 to be horizontal here
         TODO: more accurate & generic maths
@@ -98,20 +100,25 @@ class Sier(gtk.DrawingArea):
         print "Calculated", len(tris), "triangles in", round((end-start), 4), "s"
         return tris
 
-    def expose(self, widget, event):
-        cr = widget.window.cairo_create()
-        rect = self.get_allocation()
+    def recalc(self):
+        self.allocate(self, self.get_allocation())
+        self.queue_draw()
+
+    def allocate(self, widget, rect):
         tri = Triangle(rect.x + rect.width/2.0, rect.y,
                        rect.x, rect.y + rect.height,
                        rect.x + rect.width, rect.y + rect.height)
-        tris = self.fractal(tri, self.level)
+        self.tris = self.fractal(tri, self.level)
+
+    def expose(self, widget, event):
+        cr = widget.window.cairo_create()
         cr.set_source_rgb(0.0, 0.0, 0.0)
         start = time()
-        for t in tris:
+        for t in self.tris:
             t.draw(cr)
         cr.fill()
         end = time()
-        print "Drew", len(tris), "triangles in", round((end-start), 4), "s"
+        print "Drew", len(self.tris), "triangles in", round((end-start), 4), "s"
 
         return False
 
@@ -120,7 +127,7 @@ def key_release(widget, event, sier):
         sier.level = sier.level+1
     if event.keyval == 45:
         sier.level = sier.level-1
-    sier.queue_draw()
+    sier.recalc()
     return False
 
 def main():
