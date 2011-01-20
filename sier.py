@@ -25,6 +25,7 @@
 """
 
 import gtk
+from time import time
 
 class Triangle:
     """ x1,y1
@@ -82,12 +83,15 @@ class Sier(gtk.DrawingArea):
         return ts
 
     def fractal(self, tri, level):
+        start = time()
         tris = [tri]
         for i in range(0, level):
             new_tris = []
             for t in tris:
                 new_tris.extend(self.shrink(t))
             tris = new_tris
+        end = time()
+        print "Calculated", len(tris), "triangles in", round((end-start), 4), "s"
         return tris
 
     def expose(self, widget, event):
@@ -98,8 +102,11 @@ class Sier(gtk.DrawingArea):
                        rect.x + rect.width, rect.y + rect.height)
         tris = self.fractal(tri, self.level)
         cr.set_source_rgb(0.0, 0.0, 0.0)
+        start = time()
         for t in tris:
             t.draw(cr)
+        end = time()
+        print "Drew", len(tris), "triangles in", round((end-start), 4), "s"
 
         return False
 
