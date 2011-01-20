@@ -70,15 +70,20 @@ class Sier(gtk.DrawingArea):
         width = (t.x3 - t.x2)/2.0
         height = (t.y1 - t.y2)/2.0
         ts=[];
-        ts.append(Triangle(t.x2 + width/2.0, t.y2 + height,
-                           t.x2,             t.y2,
-                           t.x2 + width,     t.y2))
-        ts.append(Triangle(t.x1,             t.y1,
-                           t.x2 + width/2.0, t.y2 + height,
-                           t.x2 + width*1.5, t.y3 + height))
-        ts.append(Triangle(t.x2 + width*1.5, t.y3 + height,
-                           t.x2 + width,     t.y2,
-                           t.x3,             t.y3))
+        p1 = t.x2 + width/2.0
+        p2 = t.x2 + width
+        p3 = t.x2 + width*1.5
+        p4 = t.y3 + height
+        p5 = t.y2 + height
+        ts.append(Triangle(p1,   p5,
+                           t.x2, t.y2,
+                           p2,   t.y2))
+        ts.append(Triangle(t.x1, t.y1,
+                           p1,   p5,
+                           p3,   p4))
+        ts.append(Triangle(p3,   p4,
+                           p2,   t.y2,
+                           t.x3, t.y3))
         return ts
 
     def fractal(self, tri, level):
