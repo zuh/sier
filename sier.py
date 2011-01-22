@@ -139,8 +139,8 @@ def main():
     window.connect("key_release_event", key_release, s)
     window.show_all()
     
-    window.set_size_request(200, 200)
-    window.resize(200,200)
+    window.set_size_request(400, 400)
+    window.resize(400,400)
     
     gtk.main()
 
