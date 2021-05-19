@@ -24,7 +24,10 @@
  * OTHER DEALINGS IN THE SOFTWARE.
 """
 
-import gtk
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk as gtk
+from gi.repository import GObject as gobject
 from time import time
 
 class Triangle:
@@ -62,7 +65,7 @@ class Sier(gtk.DrawingArea):
 
     def __init__(self):
         gtk.DrawingArea.__init__(self)
-        self.connect("expose_event", self.expose)
+        self.connect("draw", self.draw)
         self.connect("size-allocate", self.allocate)
 
     """ We assume x2,y2-x3,y3 to be horizontal here
@@ -97,7 +100,7 @@ class Sier(gtk.DrawingArea):
                 new_tris.extend(self.shrink(t))
             tris = new_tris
         end = time()
-        print "Calculated", len(tris), "triangles in", round((end-start), 4), "s"
+        print ("Calculated", len(tris), "triangles in", round((end-start), 4), "s")
         return tris
 
     def recalc(self):
@@ -110,24 +113,30 @@ class Sier(gtk.DrawingArea):
                        rect.x + rect.width, rect.y + rect.height)
         self.tris = self.fractal(tri, self.level)
 
-    def expose(self, widget, event):
-        cr = widget.window.cairo_create()
+    def draw(self, widget, cr):
         cr.set_source_rgb(0.0, 0.0, 0.0)
         start = time()
         for t in self.tris:
             t.draw(cr)
         cr.fill()
         end = time()
-        print "Drew", len(self.tris), "triangles in", round((end-start), 4), "s"
+        print("Drew", len(self.tris), "triangles in", round((end-start), 4), "s")
 
         return False
 
+    def increase_level(self):
+        self.level = self.level+1
+        self.recalc()
+
+    def decrease_level(self):
+        self.level = self.level-1
+        self.recalc()
+
 def key_release(widget, event, sier):
     if event.keyval == 43:
-        sier.level = sier.level+1
+        sier.increase_level()
     if event.keyval == 45:
-        sier.level = sier.level-1
-    sier.recalc()
+        sier.decrease_level()
     return False
 
 def main():
